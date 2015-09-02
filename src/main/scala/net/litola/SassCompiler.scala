@@ -5,9 +5,10 @@ import java.io.File
 import play.PlayExceptions.AssetCompilationException
 
 import scala.sys.process._
+//import wrm.libsass._
 
 object SassCompiler {
-  def compile(sassFile: File, opts: Seq[String]): (String, Option[String], Seq[File]) = {
+  def compile(sassFile: File, opts: Seq[String],libSass:Boolean): (String, Option[String], Seq[File]) = {
     // Filter out rjs option added by AssetsCompiler until we get clarity on what would
     // be proper solution
     // See: https://groups.google.com/d/topic/play-framework/VbhJUfVl-xE/discussion

@@ -12,23 +12,25 @@ object SassPlugin extends AutoPlugin with PlayAssetsCompiler {
   object autoImport {
     val sassEntryPoints = settingKey[PathFinder]("Paths to Sass files to be compiled")
     val sassOptions = settingKey[Seq[String]]("Command line options for the sass command")
-
-    val sassWatcher = AssetsCompiler("sass",
-    { file => (file ** "*.sass") +++ (file ** "*.scss") },
-    sassEntryPoints,
-    { (name, min) =>
-      name
-        .replace(".sass", if (min) ".min.css" else ".css")
-        .replace(".scss", if (min) ".min.css" else ".css")
-    },
-    { (file, options) => SassCompiler.compile(file, options) },
-    sassOptions
-    )
+    val libSass = settingKey[Boolean]("Whether to use libsass")
 
     lazy val baseSassSettings: Seq[Def.Setting[_]] = Seq(
-      sassEntryPoints <<= (sourceDirectory in Compile)(base => ((base / "assets" ** "*.sass") +++ (base / "assets" ** "*.scss") --- base / "assets" ** "_*")),
+      sassEntryPoints <<= (sourceDirectory in Compile)(base => (base / "assets" ** "*.sass") +++ (base / "assets" ** "*.scss") --- base / "assets" ** "_*"),
       sassOptions := Seq.empty[String],
-      resourceGenerators in Compile <+= sassWatcher
+      resourceGenerators in Compile += Def.task {
+          AssetsCompiler("sass",
+          { file => (file ** "*.sass") +++ (file ** "*.scss") },
+          sassEntryPoints,
+          { (name, min) =>
+            name
+              .replace(".sass", if (min) ".min.css" else ".css")
+              .replace(".scss", if (min) ".min.css" else ".css")
+          },
+          { (file, options) => SassCompiler.compile(file, options,libSass.value) },
+          sassOptions
+          )
+      }.taskValue,
+      libSass := true
     )
   }
 

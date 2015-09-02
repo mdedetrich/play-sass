@@ -13,6 +13,7 @@ resolvers += "Typesafe repository" at "http://repo.typesafe.com/typesafe/release
 /// Dependencies
 
 libraryDependencies ++= Seq(
+  "com.github.warmuuh" % "libsass-maven-plugin" % "0.1.5-libsass_3.2.4",
   "org.scalatest" % "scalatest_2.10" % "1.9.2" % "test"
 )
 
